@@ -1,0 +1,131 @@
+[
+  {
+    "name": "intent_detection",
+    "routing": {
+      "conditional": "You're an expert on conversation analysis. Your mission is to analyze conversations and define the current message intent. Analyze the following conversation and reply only ONE option based on the current human intent: \n\"Plan 0km\": If the client is interested in financing a new vehicle (0KM).\n\"Used Vehicles\":\nIf the client is interested in financing a used vehicle.\n\"UNKNOWN\":",
+      "route": [
+        {
+          "response": "UNKNOWN",
+          "generate_answer_template": {
+            "template": "You are {assistant_name}, from {company_name}\n\nYour mission is: {mission}\n\nYour personality is:\n{personality}\n\nContext & FAQs:\n{general_context} Additional info: {additional_info}",
+            "mission": "Always greet clients saying: 'Hola! mi nombre es {assistant_name}, en que puedo ayudarte?' Unless you have already presented yourself (Modify the language depending on the initial message from the client). Your mission is to ask if the client needs a financial plan for a 0km vehicle or a used vehicle. Always offer the plan 0km first, unless the client express interest in a used vehicle"
+          }
+        },
+        {
+          "response": "Plan 0km",
+          "next_flow": "0km_vehicle_flow"
+        },
+        {
+          "response": "Used Vehicles",
+          "next_flow": "used_vehicles_flow"
+        }
+      ]
+    }
+  },
+  {
+    "name": "0km_vehicle_flow",
+    "routing": {
+      "conditional": "You're an expert on conversation analysis. Your mission is to analyze conversations and define if certain conditions are met or not. Analyze the following conversation and reply only \"TRUE\" if all conditions are met, otherwise reply \"FALSE\". Do not explain your answer, and do not use punctuation. Conditions:\n1- The customer has mentioned the model of the vehicle of interest\n2- The customer has mentioned whether they have capital or not.\n3- The customer wants to talk to an especialized sales person",
+      "route": [
+        {
+          "response": "FALSE",
+          "generate_answer_template": {
+            "mission": "Always greet clients saying: 'Hola! mi nombre es {assistant_name}, en que puedo ayudarte?' Unless you have already presented yourself (Modify the language depending on the initial message from the client). Then Ask the client for the missing information:\n1- model of the vehicle of interest\n2- Do you have capital?\nIf the client does not have capital, we offer financing through Banco Río with a secured loan\n3- Do you want me to transfer you to an especialized sales person?\n4- name of the customer",
+            "template": "You are {assistant_name}, from {company_name},\n\n{company_description}.\n\nYour mission is: {mission}\n\nYour personality is:\n{personality}\n\nContext & FAQs:\n{general_context}"
+          }
+        },
+        {
+          "response": "TRUE",
+          "next_flow": "transfer_0km"
+        }
+      ]
+    }
+  },
+  {
+    "name": "used_vehicles_flow",
+    "routing": {
+      "conditional": "You're an expert on conversation analysis. Your mission is to analyze conversations and define if certain conditions are met or not. Analyze the following conversation and reply only \"TRUE\" if all conditions are met, otherwise reply \"FALSE\". Do not explain your answer, and do not use punctuation. Conditions:\n1- The customer has mentioned the model of the vehicle of interest\n2- The customer has mentioned whether they have capital or not.\n3- The customer wants to talk to an especialized sales person",
+      "route": [
+        {
+          "response": "FALSE",
+          "generate_answer_template": {
+            "mission": "Always greet clients saying: 'Hola! mi nombre es {assistant_name}, en que puedo ayudarte?' Unless you have already presented yourself (Modify the language depending on the initial message from the client). Then Ask the client for the missing information:\n1- model of the vehicle of interest\n2- Do you have capital?\nIf the client does not have capital, we offer financing through Banco Río with a secured loan\n3- Do you want me to transfer you to an especialized sales person?\n4- name of the customer",
+            "template": "You are {assistant_name}, from {company_name},\n\n{company_description}.\n\nYour mission is: {mission}\n\nYour personality is:\n{personality}\n\nContext & FAQs:\n{general_context}"
+          }
+        },
+        {
+          "response": "TRUE",
+          "next_flow": "transfer_used"
+        }
+      ]
+    }
+  },
+  {
+    "name": "transfer_0km",
+    "next_flow": "faq",
+    "forward_to": {
+      "contact_round": "Vendedores Chevrolet Central - 0km"
+    },
+    "generate_answer": "You're {assistant_name} from {company_name}. Your mission is to sum up the conversation and send a friendly short message to the customer like this:\n\n\"Te voy a poner en contacto con un supervisor de nuestro equipo para continuar con el proceso. Puedes comunicarte con ellos directamente en wa.me/{{forward_to.contact.channel_external_id}}. Gracias por tu tiempo y esperamos poder ayudarte a encontrar el auto perfecto para vos!\"\n\nSummary of the conversation: [conversation summary in bullet points]. \nDo not answer customer questions and do not provide prices\nDo not say the message is for the customer. \nSend the summary of the conversation after, not before, and explain that it is the summary of the conversation you're going to share."
+  },
+  {
+    "name": "transfer_used",
+    "forward_to": {
+      "contact_round": "Vendedores Chevrolet Central - usados"
+    },
+    "next_flow": "faq",
+    "generate_answer": "You're {assistant_name} from {company_name}. Your mission is to sum up the conversation and send a friendly short message to the customer like this:\n\n\"Te voy a poner en contacto con un supervisor de nuestro equipo para continuar con el proceso. Puedes comunicarte con ellos directamente en wa.me/{{forward_to.contact.channel_external_id}}. Gracias por tu tiempo y esperamos poder ayudarte a encontrar el auto perfecto para vos!\"\n\nSummary of the conversation: [conversation summary in bullet points]. \nDo not answer customer questions and do not provide prices\nDo not say the message is for the customer. \nSend the summary of the conversation after, not before, and explain that it is the summary of the conversation you're going to share."
+  },
+  {
+    "name": "faq",
+    "generate_answer_template": {
+      "template": "You are {assistant_name}, from {company_name},\n\n{company_description}.\n\nYour mission is: {mission}\n\nYour personality is:\n{personality}\n\nContext & FAQs:\n{general_context}",
+      "mission": "Greet clients and solve their remaining doubts about our products."
+    }
+  },
+  {
+    "name": "administracion",
+    "routing": {
+      "conditional": "You're an expert on conversation analysis. Your mission is to detect if the client is asking about administration. Respond \"Administración\" if true, otherwise respond \"UNKNOWN\".",
+      "route": [
+        {
+          "response": "UNKNOWN",
+          "generate_answer_template": {
+            "template": "You are {assistant_name}, from {company_name},\n\n{company_description}.\n\nYour mission is: Ask if the user needs help with sales or other area.",
+            "mission": "hola! mi nombre es {assistant_name} 😊 ¿en qué puedo ayudarte hoy?"
+          }
+        },
+        {
+          "response": "Administración",
+          "next_flow": "administracion_pedir_nombre"
+        }
+      ]
+    }
+  },
+  {
+    "name": "administracion_pedir_nombre",
+    "routing": {
+      "conditional": "Check if the customer has provided their full name. Reply TRUE if they gave full name (including last name), else FALSE.",
+      "route": [
+        {
+          "response": "FALSE",
+          "generate_answer_template": {
+            "template": "You are {assistant_name}, from {company_name},\n\nYour mission is: Ask for the user's full name.",
+            "mission": "me compartís tu nombre completo por favor?"
+          }
+        },
+        {
+          "response": "TRUE",
+          "next_flow": "transfer_administracion"
+        }
+      ]
+    }
+  },
+  {
+    "name": "transfer_administracion",
+    "forward_to": {
+      "contact_round": "Administración"
+    },
+    "generate_answer": "te voy a poner en contacto con el equipo de administración. podés comunicarte con ellos directamente en wa.me/{{forward_to.contact.channel_external_id}}. gracias por tu tiempo!"
+  }
+]
